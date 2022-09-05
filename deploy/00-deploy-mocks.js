@@ -1,4 +1,4 @@
-const { network } = require("hardhat")
+const { network, ethers } = require("hardhat")
 const { DECIMALS, INITIAL_PRICE } = require("../helper-hardhat-config")
 
 const BASE_FEE = "250000000000000000" // 0.25 is this the premium in LINK?
