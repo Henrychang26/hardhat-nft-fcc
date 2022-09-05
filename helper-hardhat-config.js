@@ -18,6 +18,7 @@ const networkConfig = {
         mintFee: "10000000000000000", // 0.01 ETH
         subscriptionId: "19809", // add your ID here!
         mintFee: "10000000000000000", //0.01 ETH
+        ethUsdPriceFeed: "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e",
     },
 }
 
