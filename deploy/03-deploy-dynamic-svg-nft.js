@@ -10,7 +10,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     const chainId = network.config.chainId
     let ethUsdPriceFeedAddress
 
-    if (developmentChains.includes(network.name)) {
+    if (chainId == 31337) {
         const EthUsdAggregator = await ethers.getContract("MockV3Aggregator")
         ethUsdPriceFeedAddress = EthUsdAggregator.address
     } else {
@@ -19,8 +19,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
     log("---------------")
 
-    const lowSVG = await fs.readFileSync("./images/dynamicNFT/frown.svg", { encoding: "utf8" })
-    const highSVG = await fs.readFileSync("./images/dynamicNFT/happy.svg", { encoding: "utf8" })
+    const lowSVG = fs.readFileSync("./images/dynamicNFT/frown.svg", { encoding: "utf8" })
+    const highSVG = fs.readFileSync("./images/dynamicNFT/happy.svg", { encoding: "utf8" })
 
     args = [ethUsdPriceFeedAddress, lowSVG, highSVG]
     const dynamicSvgNft = await deploy("DynamicSvgNft", {

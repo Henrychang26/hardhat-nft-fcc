@@ -12,8 +12,8 @@ contract DynamicSvgNft is ERC721 {
     //some logic to say "Show X image" or "show Y Image"
 
     uint256 private s_tokenCounter;
-    string private i_lowImageURI;
-    string private i_highImageURI;
+    string private s_lowImageURI;
+    string private s_highImageURI;
     string private constant base64EncodedSvgPrefix = "data:image/svg+xnl;base64,";
     AggregatorV3Interface internal immutable i_priceFeed;
 
@@ -22,13 +22,15 @@ contract DynamicSvgNft is ERC721 {
     event CreatedNFT(uint256 indexed tokenId, int256 highValue);
 
     constructor(
-        address priceFeedAddress,
         string memory lowSvg,
-        string memory highSvg
+        string memory highSvg,
+        address priceFeedAddress
     ) ERC721("Dynamic SVG NFT", "DSN") {
         s_tokenCounter = 0;
-        i_lowImageURI = svgToImageURI(lowSvg);
-        i_highImageURI = svgToImageURI(highSvg);
+        // i_lowImageURI = svgToImageURI(lowSvg);
+        // i_highImageURI = svgToImageURI(highSvg);
+        s_lowImageURI = svgToImageURI(lowSvg);
+        s_highImageURI = svgToImageURI(highSvg);
         i_priceFeed = AggregatorV3Interface(priceFeedAddress);
     }
 
@@ -49,17 +51,17 @@ contract DynamicSvgNft is ERC721 {
         return "data:application/json;base64,";
     }
 
-    function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        require(_exists(tokenId), "URI Query for nonexistent token"); //function from ERC721 contract
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        require(!_exists(tokenId), "URI Query for nonexistent token"); //function from ERC721 contract
         // string memory imageURI = "Hi";
 
         //data:image/svg+xml;base64,  --prefix
         //data:application/json;base64,
 
         (, int256 price, , , ) = i_priceFeed.latestRoundData();
-        string memory imageURI = i_lowImageURI;
+        string memory imageURI = s_lowImageURI;
         if (price >= s_tokenIdToHighValue[tokenId]) {
-            imageURI = i_highImageURI;
+            imageURI = s_highImageURI;
         }
         return
             string(
@@ -79,5 +81,21 @@ contract DynamicSvgNft is ERC721 {
                     )
                 )
             );
+    }
+
+    function getLowSVG() public view returns (string memory) {
+        return s_lowImageURI;
+    }
+
+    function getHighSVG() public view returns (string memory) {
+        return s_highImageURI;
+    }
+
+    function getPriceFeed() public view returns (AggregatorV3Interface) {
+        return i_priceFeed;
+    }
+
+    function getTokenCounter() public view returns (uint256) {
+        return s_tokenCounter;
     }
 }
